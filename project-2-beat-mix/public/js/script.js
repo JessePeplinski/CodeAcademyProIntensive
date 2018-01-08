@@ -67,6 +67,34 @@ function clear(drumArray) {
 }
 
 // takes an array name string and flips the boolean value of all elements in the correct array.
-function invert(drumArray) {
+function invert(drumArrayAsString) {
+    switch(drumArrayAsString) {
+        case 'kicks':
+            flipAllBits(kicks);
+            break;
+        case 'snares':
+            flipAllBits(snares);
+            break;  
+        case 'hiHats':
+            flipAllBits(hiHats);
+            break;   
+        case 'rideCymbals':
+            flipAllBits(rideCymbals);
+            break; 
+        default:
+            console.error('Kicks, snares, hiHats, or rideCymbals not specified');    
+    }
+}
 
+function flipAllBits(array) {
+    for(var i = 0; i < array.length; i++) {
+        
+        if(array[i] === false ) {
+            array[i] = true;
+        }
+
+        else if(array[i] === true) {
+            array[i] = false;
+        }
+    }
 }
