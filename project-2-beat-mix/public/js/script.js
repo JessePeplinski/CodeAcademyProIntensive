@@ -18,43 +18,31 @@ function toggleDrum(drumArrayAsString, index) {
     if(index > 16 || index < 0) {
         // console.error('index out of range');
     }
-
     
     switch(drumArrayAsString) {
         case 'kicks':
-            if(kicks[index] === false) {
-                kicks[index] = true;
-            }
-            else if(kicks[index] === true) {
-                kicks[index] = false;
-            }
+            flipSingleDrumBit(kicks, index);
             break;
         case 'snares':
-            if(snares[index] === false) {
-                snares[index] = true;
-            }
-            else if(snares[index] === true) {
-                snares[index] = false;
-            }
+            flipSingleDrumBit(snares, index);
             break;  
         case 'hiHats':
-            if(hiHats[index] === false) {
-                hiHats[index] = true;
-            }
-            else if(hiHats[index] === true) {
-                hiHats[index] = false;
-            }
+            flipSingleDrumBit(hiHats, index);
             break;   
         case 'rideCymbals':
-            if(rideCymbals[index] === false) {
-                rideCymbals[index] = true;
-            }
-            else if(rideCymbals[index] === true) {
-                rideCymbals[index] = false;
-            }
+            flipSingleDrumBit(rideCymbals, index);
             break; 
         default:
             console.error('Kicks, snares, hiHats, or rideCymbals not specified');    
+    }
+}
+
+function flipSingleDrumBit (array, index) {
+    if(array[index] === false) {
+        array[index] = true;
+    }
+    else if(array[index] === true) {
+        array[index] = false;
     }
 }
 
@@ -82,9 +70,3 @@ function clear(drumArray) {
 function invert(drumArray) {
 
 }
-
-// console.log(kicks);
-
-// toggleDrum('kicks', 6);
-
-// console.log(kicks);
