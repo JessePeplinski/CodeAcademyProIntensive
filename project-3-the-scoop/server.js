@@ -2,8 +2,13 @@
 let database = {
   users: {},
   articles: {},
-  nextArticleId: 1
+  nextArticleId: 1,
+  comments: {
+
+  },
+  nextCommentId: 1,
 };
+
 
 const routes = {
   '/users': {
@@ -26,8 +31,89 @@ const routes = {
   },
   '/articles/:id/downvote': {
     'PUT': downvoteArticle
-  }
+  },
+  '/comments': {
+    'POST': createComment,
+  },
+  '/comments/:id': {
+    'PUT': updateComment,
+    'DELETE': deleteComment,
+  },
+  '/comments/:id/upvote': {
+    'PUT': upvoteComment,
+  },
+  '/comments/:id/downvote': {
+    'PUT': downvoteComment,
+  },
 };
+
+function createComment(url, request) {
+
+  const requestComment = request.body;
+  const response = {};
+
+  // IF(Entire request is valid)
+  if(requestComment
+     && requestComment.comment
+     && requestComment.comment.body
+     && requestComment.comment.username
+     && requestComment.comment.articleId
+     && database.articles[requestComment.comment.articleId] 
+     && database.users[requestComment.comment.username]) {
+
+    // Create a new comment, increment new comment ID
+    const comment = {
+      id: database.nextCommentId++,
+      body: requestComment.comment.body,
+      username: requestComment.comment.username,
+      articleId: requestComment.comment.articleId,
+      upvotedBy: [],
+      downvotedBy: []
+    };
+
+    // database.nextCommentId++; // not sure if we need to increment outside or inside...
+
+    database.comments[comment.id] = comment;
+
+    // TODO: routes['/comments'].POST should add a newly created comment's ID to the author's comment IDs
+    database.users[requestComment.comment.username].commentIds.push(comment.id);
+
+    // TOOD: routes['/comments'].POST should add a newly created comment's ID to the article's comment IDs
+    database.articles[requestComment.comment.articleId].commentIds.push(comment.id)
+
+    // Set response body
+    response.body = {comment: comment};
+
+    // Return 201 status
+    response.status = 201;
+  }
+  // ELSE (request is invalid)
+  else {
+    response.status = 400;
+  }
+
+  return response;
+}
+
+function updateComment(url, request) {
+  const response = {};
+  return response;
+}
+
+function deleteComment(url, request) {
+  const response = {};
+  return response;
+}
+
+function upvoteComment(url, request) {
+  const response = {};
+  return response;
+}
+
+function downvoteComment(url, request) {
+  const response = {};
+  return response;
+}
 
 function getUser(url, request) {
   const username = url.split('/').filter(segment => segment)[1];
