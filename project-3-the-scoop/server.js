@@ -72,7 +72,6 @@ function createComment(url, request) {
     };
 
     // database.nextCommentId++; // not sure if we need to increment outside or inside...
-
     database.comments[comment.id] = comment;
 
     // TODO: routes['/comments'].POST should add a newly created comment's ID to the author's comment IDs
@@ -96,22 +95,87 @@ function createComment(url, request) {
 }
 
 function updateComment(url, request) {
+  const id = Number(url.split('/').filter(segment => segment)[1]);
+  const dbComment = database.comments[id];
+  const newCommentToAdd = request.body && request.body.comment;
+  const checkForBody = newCommentToAdd && newCommentToAdd.body.length;
+  // wonder why i couldnt use Object.keys(request).length === 0 for this..
   const response = {};
+
+  if(!id || !newCommentToAdd || !checkForBody) {
+    response.status = 400;
+  }
+  else if(!dbComment) {
+    response.status = 404;
+  }
+  else {
+    dbComment.body = newCommentToAdd.body || dbComment.body;
+    response.body = {comment: dbComment};
+    response.status = 200;
+  }
   return response;
 }
 
 function deleteComment(url, request) {
+  const id = Number(url.split('/').filter(segment => segment)[1]);
+  const dbComment = database.comments[id];
   const response = {};
+
+  if(dbComment) {
+    database.comments[id] = null;
+
+    const userCommentIds = database.users[dbComment.username].commentIds;
+    userCommentIds.splice(userCommentIds.indexOf(id), 1);
+
+    const userArticleIds = database.articles[id].commentIds;
+    userArticleIds.splice(userArticleIds.indexOf(id), 1);
+
+    response.status = 204;
+  }
+  else {
+    response.status = 404;
+  }
+
   return response;
 }
 
 function upvoteComment(url, request) {
+  const id = Number(url.split('/').filter(segment => segment)[1]);
+  const username = request.body && request.body.username;
+  let dbComment = database.comments[id];
   const response = {};
+
+  if(dbComment && database.users[username]) {
+
+    dbComment =  upvote(dbComment, username);
+
+    response.body = {comment: dbComment};
+    response.status = 200;
+  }
+  else {
+    response.status = 400;
+  }
+
   return response;
 }
 
 function downvoteComment(url, request) {
+  const id = Number(url.split('/').filter(segment => segment)[1]);
+  const username = request.body && request.body.username;
+  let dbComment = database.comments[id];
   const response = {};
+
+  if(dbComment && database.users[username]) {
+
+    dbComment = downvote(dbComment, username);
+
+    response.body = {comment: dbComment};
+    response.status = 200;
+  }
+  else {
+    response.status = 400;
+  }
+
   return response;
 }
 
